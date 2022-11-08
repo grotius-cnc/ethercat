@@ -1,0 +1,7 @@
+#!/bin/bash
+# This is a post install script.
+
+echo "If your install fails"
+echo "Install your kernel headers by : sudo apt-get install linux-headers-$(uname -r)"
+
+

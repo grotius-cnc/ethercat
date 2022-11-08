@@ -1,0 +1,67 @@
+#!/bin/bash
+# This is a post install script.
+
+cd /opt/ethercat/
+
+	./bootstrap
+	#./configure --help
+	./configure --enable-generic --disable-8139too
+	make all modules
+	make modules_install install
+	depmod
+	
+# Copy ethercat launcher :
+
+    cp -f /opt/ethercat/script/init.d/ethercat /etc/init.d/
+
+# Make ethercat launcher executable :
+
+	# Set as executable
+    chmod +x /opt/ethercat/script/init.d/ethercat
+    # A non sudo can start the bus.
+    chmod 777 /opt/ethercat/script/init.d/ethercat
+
+# Copy ethercat "mac adres and driver" config page to system :
+
+    mkdir -p /etc/sysconfig/
+    cp -f /opt/ethercat/script/sysconfig/ethercat /etc/sysconfig/
+
+# Retrieve mac adres :
+
+	# > means overwrite all
+    echo MASTER0_DEVICE="$(cat /sys/class/net/enp0s25/address)" > /etc/sysconfig/ethercat
+
+# We choose the generic driver to activate :
+
+	# >> means append to file
+    echo DEVICE_MODULES="generic" >> /etc/sysconfig/ethercat
+
+# From etherlab orginal :
+    
+    echo "KERNEL=="\"EtherCAT[0-9]*\"", MODE="\"777\"", GROUP=""\"ethercat\"" > /etc/udev/rules.d/99-ethercat.rules
+    chmod go+rwx /etc/udev/rules.d/99-ethercat.rules
+    
+# Start ethercat :
+
+    systemctl restart systemd-modules-load.service
+    /etc/init.d/ethercat start
+
+# Back to source dir :
+cd
+
+echo "Your installation is located in the /opt/ethercat/ folder"
+echo ""
+echo "Your ethercat bus lights should blink fast now !!"
+echo ""
+echo "To start : $ sudo /etc/init.d/ethercat start"
+echo ""
+echo "To stop : $ sudo /etc/init.d/ethercat stop"
+echo ""
+echo "To restart : $ sudo /etc/init.d/ethercat restart"
+echo ""
+echo "Status : $ sudo /etc/init.d/ethercat status"
+
+
+
+
+
