@@ -1,7 +1,8 @@
 #!/bin/bash
-# This is a post install script.
 
-cd /opt/ethercat/
+PWD_DIR=$(pwd)
+
+# This is a post install script.
 
 	./bootstrap
 	#./configure --help
@@ -12,19 +13,19 @@ cd /opt/ethercat/
 	
 # Copy ethercat launcher :
 
-    cp -f /opt/ethercat/script/init.d/ethercat /etc/init.d/
+    cp -f $PWD_DIR/script/init.d/ethercat /etc/init.d/
 
 # Make ethercat launcher executable :
 
 	# Set as executable
-    chmod +x /opt/ethercat/script/init.d/ethercat
+    chmod +x $PWD_DIR/script/init.d/ethercat
     # A non sudo can start the bus.
-    chmod 777 /opt/ethercat/script/init.d/ethercat
+    chmod 777 $PWD_DIR/script/init.d/ethercat
 
 # Copy ethercat "mac adres and driver" config page to system :
 
     mkdir -p /etc/sysconfig/
-    cp -f /opt/ethercat/script/sysconfig/ethercat /etc/sysconfig/
+    cp -f $PWD_DIR/script/sysconfig/ethercat /etc/sysconfig/
 
 # Retrieve mac adres :
 
@@ -46,11 +47,6 @@ cd /opt/ethercat/
     systemctl restart systemd-modules-load.service
     /etc/init.d/ethercat start
 
-# Back to source dir :
-cd
-
-echo "Your installation is located in the /opt/ethercat/ folder"
-echo ""
 echo "Your ethercat bus lights should blink fast now !!"
 echo ""
 echo "To start : $ sudo /etc/init.d/ethercat start"
